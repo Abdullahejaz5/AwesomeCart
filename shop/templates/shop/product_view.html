@@ -1,0 +1,51 @@
+{% extends 'shop/base.html' %}
+{% block title %} Product View {% endblock %}
+{% block css %} .col-md-3
+          {
+          display: inline-block;
+          margin-left:-4px;
+          }
+          .carousel-indicators .active {
+          background-color: blue;
+            }
+          .col-md-3 img{
+          width:255px;
+          height:255px;
+          }
+          body .carousel-indicator li{
+          background-color: blue;
+          }
+          body .carousel-indicators{
+          bottom: 0;
+          }
+          body .carousel-control-prev-icon,
+          body .carousel-control-next-icon{
+          background-color: blue;
+
+          }
+           body .no-padding{
+           padding-left: 0,
+           padding-right: 0;
+           }
+
+          .carousel-control-next,
+          .carousel-control-prev {
+          top:auto;
+          bottom: auto;
+          padding-top: 200px;
+
+          } {% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mx-4 my-4">
+            <img src='{{product.product_image.url}}' width="200px">
+        </div>
+        <div class="col-md-4 mx-4 my-4">
+            <h3>{{product.product_name}}</h3>
+            <h3>RS:{{product.product_price}}</h3>
+            <p>{{product.product_desc}}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

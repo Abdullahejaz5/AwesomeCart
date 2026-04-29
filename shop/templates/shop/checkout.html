@@ -1,0 +1,131 @@
+{% extends 'shop/base.html' %}
+{% block title %} CheckOut {% endblock %}
+{% block body %}
+<div class="container">
+    <div class="col">
+        <h4>Your Selected Items:</h4>
+    <ul class="list-group" id="item_1">
+  
+</ul>
+<br>
+
+<span id="third"></span>
+</div>
+
+<div class="col my-5">
+    <h4>Plz Enter your details here:</h4>
+    <form id="checkoutForm" action="/shop/checkout" method="post">
+      {% csrf_token %}
+  <div class="form-group">
+           <input type="hidden" name="products" class="form-control" id="products">
+           <input type="hidden" name="price" class="form-control" id="price">
+
+            <label for="name">Your Name</label>
+            <input type="text" name="name" class="form-control" id="name" placeholder="Enter your name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Your Email</label>
+            <input type="email" name='email' class="form-control" id="email" placeholder="Enter your email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="subject">Contact no</label>
+            <input type="tel" name='contact' class="form-control" id="subject" placeholder="Enter your Contact no" required>
+          </div>
+
+          <div class="form-group">
+            <label for="address1">Address line 1</label>
+            <input type="text" name='address1' class="form-control" id="address1" placeholder="Enter your Address line 1" required>
+          </div>
+
+          <div class="form-group">
+            <label for="address2">Address line 2</label>
+            <input type="text" name='address2' class="form-control" id="address2" placeholder="Enter your Address line 2" required>
+          </div>
+
+          <div class="form-group">
+           
+            <label for="country">Country</label>
+            <input type="text" name='country' class="col-md-4" id="country" placeholder="Enter country" required>
+            <label for="state">State</label>
+            <input type="text" name='state' class=="col-md-4" id="state" placeholder="Enter state" required>
+            <label for="zip">Zip Code</label>
+            <input type="number" name='zip' class=="col-md-4" id="zip" placeholder="Enter zipCode" required>
+          </div>
+          
+
+          <button type="submit" class="btn btn-primary">Plcae_Order</button>
+        
+</form>
+</div>
+</div>
+{% endblock %}
+
+{% block js %}
+
+
+
+<script>
+/* Existing cart-handling code (unchanged logic) */
+if (Object.keys(cart).length==0){
+  alert("Your cart is empty");
+   document.location= "/shop"; 
+    $('#item_1').append('<p>NO ITEM IN YOUR CART</p>');
+}
+else{
+  var pr=0;
+for (var item in cart){
+  if (cart[item][0]>0){
+    $('#item_1').append(`<li class="list-group-item d-flex justify-content-between align-items-center">
+    ${cart[item][1]}
+    <span class="badge text-bg-primary rounded-pill">${cart[item][0]}</span>
+  </li>`);
+  pr=pr+parseInt(cart[item][2]);}
+}}
+document.getElementById('third').innerHTML=`<h3>Total Price:</h3> <h5><span id='pp'>${pr}</span> pkr.</h5>`;
+
+$('#products').val(JSON.stringify(cart));
+$('#price').val(document.getElementById('pp').innerHTML);
+{% if thanks %}
+localStorage.removeItem('cart');
+document.getElementById('cart').innerHTML=0;
+alert(' Thanks for Placing your order. \n Your order has been placed successfully. \n Use this id -> ({{id}}) to track your order. \n Have a nice day.');
+
+document.location='/shop'
+console.log(cart);
+{% endif %}
+
+/* ---------- ADDED: minimal client-side validation (no other changes) ---------- */
+/* Prevent submit when any required field empty OR cart gets empty before submit */
+document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    // Re-check cart in case it changed between page load and submit
+    let latestCart;
+    try {
+        latestCart = JSON.parse(localStorage.getItem('cart')) || {};
+    } catch (err) {
+        latestCart = {};
+    }
+    if (!latestCart || Object.keys(latestCart).length === 0) {
+        e.preventDefault();
+        alert("Your cart is empty. Please add items before placing the order.");
+        window.location = "/shop";
+        return;
+    }
+
+    // Check required fields (these inputs have HTML5 'required' but double-check)
+    const fields = ['name','email','subject','address1','address2','country','state','zip'];
+    for (let i = 0; i < fields.length; i++) {
+        const el = document.getElementById(fields[i]);
+        if (!el) continue; // defensive
+        if (el.value === null || el.value.trim() === '') {
+            e.preventDefault();
+            alert("Please fill all required fields before placing the order.");
+            el.focus();
+            return;
+        }
+    }
+    // all good — form will submit
+});
+</script>
+  {% endblock %}

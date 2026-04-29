@@ -1,0 +1,92 @@
+{% extends 'shop/base.html' %}
+{% block title %} tracker {% endblock %}
+{% block body %}
+<div class="container">
+    
+
+<div class="col">
+    <h4>Plz Enter your details:</h4>
+    <form  method='post' action="#" name='my_form' id="my_form">
+      {% csrf_token %}
+  
+
+          <div class="form-group">
+            <label for="email">Your Email</label>
+            <input type="email" name='email' class="form-control" id="email" placeholder="Enter your email">
+          </div>
+
+          <div class="form-group">
+            <label for="order_id">Your order_id</label>
+            <input type="number" name='order_id' class="form-control" id="order_id" placeholder="Enter your order id">
+          </div>
+
+          
+
+          
+          
+
+          <button type="submit" class="btn btn-primary">Track_Order</button>
+        
+</form>
+</div>
+<div class="col my-8">
+  <span id='second'></span>
+    <ul class="list-group" name="items_1" id="items_1">
+  
+</ul>
+</div>
+
+<div class="col my-8">
+  <span id='first' ></span>
+    <ul class="list-group" name="items" id="items">
+  
+</ul>
+</div>
+
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+$('#my_form').submit(function(event){
+$('#items').empty();
+$('#items_1').empty();
+
+var datas={
+    'email':$('input[name=email]').val(),
+    'order_id':$('input[name=order_id]').val(),
+    'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+};
+
+$.ajax({type:'POST',url:'/shop/tracker',data:datas,encode:true})
+
+
+.done(function(data){
+data =JSON.parse(data);
+var c_data=data[0];
+var cart1=data[1];
+if (data.length>0){
+  document.getElementById('first').innerHTML='<h3>Status of your order:</h3>';
+for (var i_data in c_data){
+    $('#items').append(`<li class="list-group-item d-flex justify-content-between align-items-center">
+    ${c_data[i_data]['update']}
+    <span class="badge text-bg-primary rounded-pill">${c_data[i_data]['time']}</span>
+  </li>`)
+}
+document.getElementById('second').innerHTML='<h3>Items in your order:</h3>';
+for (var item in cart1){
+    $('#items_1').append(`<li class="list-group-item d-flex justify-content-between align-items-center">
+    ${cart1[item][1]}
+    <span class="badge text-bg-primary rounded-pill">${cart1[item][0]}</span>
+  </li>`);
+}}
+else{alert('Please Enter Correct Order Id and Email');
+    document.location='/shop/tracker';
+}
+});
+event.preventDefault();
+});
+</script>
+  {% endblock %}
